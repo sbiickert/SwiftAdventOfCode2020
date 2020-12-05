@@ -1,3 +1,4 @@
 import Cocoa
 
-Day2.solve()
+Day1.solveForTwo()
+Day1.solveForThree()
