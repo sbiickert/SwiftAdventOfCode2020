@@ -5,11 +5,17 @@ public class Day6 {
 	public static func solve() {
 		let groups = readDeclarations()
 		
-		var yesCount = 0
+		var yesAnyCount = 0
 		for group in groups {
-			yesCount += group.yesAnswers.count
+			yesAnyCount += group.yesAnswersAny.count
 		}
-		print("The total number of yes answers for all groups is \(yesCount)")
+		print("The total number of yes answers for all groups is \(yesAnyCount)")
+		
+		var yesAllCount = 0
+		for group in groups {
+			yesAllCount += group.yesAnswersAll.count
+		}
+		print("The total number of questions with all members answering yes for all groups is \(yesAllCount)")
 	}
 	
 	static func readDeclarations() -> [Group] {
@@ -40,7 +46,7 @@ public class Day6 {
 struct Group {
 	let declarations: [Declaration]
 	
-	var yesAnswers: Set<Character> {
+	var yesAnswersAny: Set<Character> {
 		var answers = Set<Character>()
 		for declaration in declarations {
 			for character in declaration.code {
@@ -49,8 +55,30 @@ struct Group {
 		}
 		return answers
 	}
+	
+	var yesAnswersAll: Set<Character> {
+		var allAnswers = Set<Character>()
+		for (index, declaration) in declarations.enumerated() {
+			if index == 0 {
+				allAnswers = declaration.codeSet
+			}
+			else {
+				let answers = declaration.codeSet
+				allAnswers.formIntersection(answers)
+			}
+		}
+		return allAnswers
+	}
 }
 
 struct Declaration {
 	let code: String
+	
+	var codeSet: Set<Character> {
+		var chars = Set<Character>()
+		for char in code {
+			chars.insert(char)
+		}
+		return chars
+	}
 }
