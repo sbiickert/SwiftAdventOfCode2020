@@ -23,7 +23,7 @@ public class Day7 {
 			print("Total number of colors containing shiny gold is \(containingColors.count)")
 			
 			let goldRule = rules.filter({$0.color == "shiny gold"}).first!
-			var bagCount = countBagsContained(by: goldRule, count: 0)
+			let bagCount = countBagsContained(by: goldRule, count: 0)
 			
 			print("Total number of bags contained by shiny gold is \(bagCount)")
 		}
