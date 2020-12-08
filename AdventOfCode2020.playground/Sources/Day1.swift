@@ -32,16 +32,23 @@ public class Day1 {
 	}
 
 	public static func readExpenseAmounts() -> [Int] {
-		var expenseAmounts = [Int]()
-		if let inputPath = Bundle.main.path(forResource: "Day1_Input", ofType: "txt") {
+		let strAmounts = readInputFile(named: "Day1_Input", removingEmptyLines: true)
+		return strAmounts.compactMap { Int($0) }
+	}
+	
+	public static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
+		var results = [String]()
+		if let inputPath = Bundle.main.path(forResource: name, ofType: "txt") {
 			do {
 				let input = try String(contentsOfFile: inputPath)
-				let strAmounts = input.components(separatedBy: "\n")
-				expenseAmounts = strAmounts.compactMap { Int($0) }
+				results = input.components(separatedBy: "\n")
 			} catch {
-				
+				print("Could not read file \(name)")
 			}
 		}
-		return expenseAmounts
+		if removeEmpty {
+			results = results.filter { $0.count > 0 }
+		}
+		return results
 	}
 }

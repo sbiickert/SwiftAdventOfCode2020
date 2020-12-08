@@ -36,17 +36,10 @@ struct Hill {
 	
 	init() {
 		var theRows = [HillRow]()
-		if let inputPath = Bundle.main.path(forResource: "Day3_Input", ofType: "txt") {
-			do {
-				let input = try String(contentsOfFile: inputPath)
-				let strRows = input.components(separatedBy: "\n")
-				theRows = strRows.compactMap {
-					let hr = HillRow(pattern: $0)
-					return hr.pattern.count > 0 ? hr : nil
-				}
-			} catch {
-			 
-			}
+		let strRows = Hill.readInputFile(named: "Day3_Input", removingEmptyLines: true)
+		theRows = strRows.compactMap {
+			let hr = HillRow(pattern: $0)
+			return hr.pattern.count > 0 ? hr : nil
 		}
 		self.rows = theRows
 	}
@@ -55,6 +48,21 @@ struct Hill {
 		return rows[row].isTree(at: index)
 	}
 
+	public static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
+		var results = [String]()
+		if let inputPath = Bundle.main.path(forResource: name, ofType: "txt") {
+			do {
+				let input = try String(contentsOfFile: inputPath)
+				results = input.components(separatedBy: "\n")
+			} catch {
+				print("Could not read file \(name)")
+			}
+		}
+		if removeEmpty {
+			results = results.filter { $0.count > 0 }
+		}
+		return results
+	}
 }
 
 struct HillRow {
