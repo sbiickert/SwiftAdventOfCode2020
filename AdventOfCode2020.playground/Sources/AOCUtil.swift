@@ -3,7 +3,7 @@ import Foundation
 // I can't get a separate Swift module to reference this class
 // Code needs to be in the Playground to reference it.
 // Will copy for now.
-public class AOCUtil {
+class AOCUtil {
 	public static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
 		var results = [String]()
 		if let inputPath = Bundle.main.path(forResource: name, ofType: "txt") {
