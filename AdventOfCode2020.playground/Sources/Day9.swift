@@ -70,7 +70,7 @@ public class Day9 {
 	}
 }
 
-public class InputUtil {
+class InputUtil {
 	public static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
 		var results = [String]()
 		if let inputPath = Bundle.main.path(forResource: name, ofType: "txt") {
