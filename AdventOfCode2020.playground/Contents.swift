@@ -13,7 +13,7 @@ import Cocoa
 //Day8.solve()
 //Day9.solve()
 //Day10.solve()
+//Day11.solve()
 
-Day11.solve()
-
+Day12.solve()
 
