@@ -13,12 +13,15 @@ public class Day12 {
 		let input = readInputFile(named: "Day12_Input", removingEmptyLines: true)
 		let instructions = parseInstructions(from: input)
 		var ship = Ship(x: 0, y: 0, bearing: 0)
+		ship.waypoint = (10, 1)
+		print("Ship started at \(ship)")
 		for instruction in instructions {
 			//print(instruction)
-			ship.move(instruction)
+			//ship.move(instruction)
+			ship.navigate(instruction)
 			//print(ship)
 		}
-		print("Ship ended up at x:\(ship.x) y:\(ship.y) and bearing: \(ship.bearing)")
+		print("Ship ended at \(ship)")
 		print("The Manhattan distance is \(abs(ship.x) + abs(ship.y))")
 	}
 	
@@ -86,13 +89,14 @@ public class Day12 {
 
 struct Ship: CustomStringConvertible {
 	var description: String {
-		return "Ship x: \(x) y: \(y) b: \(bearing)"
+		return "Ship x: \(x) y: \(y) b: \(bearing) waypoint: (x: \(waypoint.x), y: \(waypoint.y))"
 	}
 	
 	var x: Int
 	var y: Int
-	// East is zero
+	// East is 0, South is 90
 	var bearing: Int
+	var waypoint: (x:Int, y:Int) = (0,0)
 	
 	mutating func move(_ instr: PilotingInstruction) {
 		switch instr {
@@ -127,6 +131,52 @@ struct Ship: CustomStringConvertible {
 		while bearing < 0 {
 			bearing += 360
 		}
+	}
+	
+	mutating func navigate(_ instr: PilotingInstruction) {
+		switch instr {
+		case .forward(let count):
+			// Move to waypoint count times
+			x += waypoint.x * count
+			y += waypoint.y * count
+			
+		case .left(let value):
+			waypoint = turnWaypointRight(waypoint, by: value * -1)
+		case .right(let value):
+			waypoint = turnWaypointRight(waypoint, by: value)
+			
+		case .north(let value):
+			waypoint.y += value
+		case .south(let value):
+			waypoint.y -= value
+		case .east(let value):
+			waypoint.x += value
+		case .west(let value):
+			waypoint.x -= value
+		}
+	}
+	
+	func turnWaypointRight(_ waypoint: (x:Int, y:Int), by angle:Int) -> (x: Int, y: Int) {
+		var turnAngle = angle
+		var returnWaypoint = waypoint
+		if angle < 0 {
+			turnAngle += 360
+		}
+		
+		switch turnAngle {
+		case 90:
+			returnWaypoint.x = waypoint.y
+			returnWaypoint.y = waypoint.x * -1
+		case 180:
+			returnWaypoint.x = waypoint.x * -1
+			returnWaypoint.y = waypoint.y * -1
+		case 270:
+			returnWaypoint.x = waypoint.y * -1
+			returnWaypoint.y = waypoint.x
+		default:
+			print("turn 0")
+		}
+		return returnWaypoint
 	}
 }
 
