@@ -18,20 +18,75 @@ public class Day16 {
 			otherTickets.append(parseTicket(inputLine))
 		}
 
-		//print(myTicket.values)
-		print("My ticket is valid? \(myTicket.isValid(forRules: rules))")
+		print("(Part 1) Error rate: \(calcErrorRate(in: otherTickets, basedOn: rules))")
+		
+		let validTickets = otherTickets.filter { $0.isValid(forRules: rules) }
+
+		// Process of elimination: at the start, any field could be possible
+		var fieldNames = [String]()
+		for rule in rules {
+			fieldNames.append(rule.field)
+		}
+		var possibleFields = [[String]]() // for each 0-19 values, what fields are possible?
+		for _ in myTicket.values {
+			possibleFields.append(fieldNames)
+		}
+		
+		// Eliminate all of the possibilities where field values violate rules
+		for ticket in validTickets {
+			for (i, value) in ticket.values.enumerated() {
+				for rule in rules {
+					if rule.isValueInRanges(value) == false {
+						possibleFields[i].removeAll(where: { $0 == rule.field })
+					}
+				}
+			}
+		}
+		
+		// Find any field where there is only one option. Mark as certain, eliminate from possibilities.
+		var certainFields = [String](repeating: "", count: myTicket.values.count)
+		while true {
+			//print(possibleFields)
+			for i in 0..<possibleFields.count {
+				if possibleFields[i].count == 1 {
+					let certainField = possibleFields[i].first!
+					// print("\(certainField) is field \(i)")
+					certainFields[i] = certainField
+					for j in 0..<possibleFields.count {
+						possibleFields[j].removeAll(where: { $0 == certainField })
+					}
+					break // eliminated a field. loop again.
+				}
+			}
+			var noWorkToDo = true
+			for i in 0..<possibleFields.count {
+				if possibleFields[i].count > 0 {
+					noWorkToDo = false
+				}
+			}
+			if noWorkToDo {
+				break
+			}
+		}
+		print("Certain fields: \(certainFields)")
+		
+		var departureValues = [Int]()
+		for (i, fieldName) in certainFields.enumerated() {
+			if fieldName.starts(with: "departure") {
+				departureValues.append(myTicket.values[i])
+			}
+		}
+		print("Multiply \(departureValues) together you get \(departureValues.reduce(1, *))")
+	}
+	
+	private static func calcErrorRate(in tickets: [Ticket], basedOn rules: [FieldRule]) -> Int {
 		var errorRate = 0
-		for ticket in otherTickets {
+		for ticket in tickets {
 			for invalidValue in ticket.invalidValues(rules: rules) {
 				errorRate += invalidValue
 			}
 		}
-		print("Error rate: \(errorRate)")
-		
-		print(otherTickets.count)
-		let validTickets = otherTickets.filter { $0.isValid(forRules: rules) }
-		print(validTickets.count)
-
+		return errorRate
 	}
 	
 	private static func parseRules(_ input: [String]) -> [FieldRule] {
