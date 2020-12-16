@@ -2,8 +2,8 @@ import Foundation
 
 public class Day15 {
 	
-	//static let MAX_TURN = 2020
-	static let MAX_TURN = 30000000
+	static let MAX_TURN = 2020
+	//static let MAX_TURN = 30000000
 
 	public static func solve() {
 		//let input = [0,3,6] // 436, 175594

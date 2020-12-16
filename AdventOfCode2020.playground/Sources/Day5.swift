@@ -20,7 +20,7 @@ public class Day5 {
 		}
 	}
 
-	static func readTickets() -> [Ticket] {
+	private static func readTickets() -> [Ticket] {
 		var tickets = [Ticket]()
 		if let inputPath = Bundle.main.path(forResource: "Day5_Input", ofType: "txt") {
 			do {
@@ -39,7 +39,7 @@ public class Day5 {
 	}
 }
 
-struct Ticket {
+private struct Ticket {
 	let code: String
 	let row: Int
 	let seat: Int
