@@ -173,6 +173,9 @@ private class PocketDimension: CustomStringConvertible {
 }
 
 private struct PocketCoord4: Hashable {
+	/*
+	Can work for 3-D, with w=0
+	*/
 	let x: Int
 	let y: Int
 	let z: Int
