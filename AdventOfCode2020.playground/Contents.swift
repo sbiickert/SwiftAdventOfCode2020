@@ -18,6 +18,6 @@ import Cocoa
 //Day13.solve(inputSched: nil)
 //Day14.solve()
 //Day15.solve()
+//Day16.solve()
 
-Day16.solve()
-
+Day17.solve()
