@@ -5,9 +5,9 @@ public class Day17 {
 	static let MAX_ITER = 6
 	
 	public static func solve() {
-		//let input = [[".#.", "..#", "###"], []] // Example
-		let input = readGroupedInputFile(named: "Day17_Input") // [0] is the example, [1] is the real input
-		let dimension = PocketDimension(inputState: input[1], numberOfDimensions: 4)
+		let input = [[".#.", "..#", "###"], []] // Example
+		//let input = readGroupedInputFile(named: "Day17_Input") // [0] is the example, [1] is the real input
+		let dimension = PocketDimension(inputState: input[0], numberOfDimensions: 4)
 		print(dimension)
 		print("Start active cube count: \(dimension.activeCount)")
 		for i in 0..<MAX_ITER {
