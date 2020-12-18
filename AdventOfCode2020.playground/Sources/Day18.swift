@@ -4,7 +4,11 @@ public class Day18 {
 	
 	private static let parenRedef = "(\\([0-9+* ]+\\))"
 	private static var parenRegex: NSRegularExpression?
-	
+	private static let addRedef = "(\\d+)\\+(\\d+)"
+	private static var addRegex: NSRegularExpression?
+	private static let multRedef = "(\\d+)\\*(\\d+)"
+	private static var multRegex: NSRegularExpression?
+
 	public static func solve(testing: Bool) {
 		if createRegularExpressions() == false {
 			return
@@ -49,46 +53,33 @@ public class Day18 {
 			range = NSRange(location: 0, length: mutableInput.utf16.count)
 		}
 		
-		// At this point, there are no more parentheses
-		// Just digit(s), operator,  digit(s), operator...  digit(s)
-		let chars = Array(mutableInput)
-		
-		// Consolidate multiple digits into single strings
-		var eqComponents = [String]()
-		var component = ""
-		for char in chars {
-			if "+*".contains(char) {
-				// Push the number
-				eqComponents.append(component)
-				// Push the operator
-				eqComponents.append("\(char)")
-				// Get ready for next number
-				component = ""
-			}
-			else {
-				component.append(char)
-			}
-		}
-		eqComponents.append(component)
-
-		var value = Int(String(eqComponents.remove(at: 0)))!
-		
-		// Now it's operator, number, operator, number
-		for i in stride(from: 0, to: eqComponents.count-1, by: 2) {
-			let op = eqComponents[i]
-			let operand = Int(eqComponents[i+1])!
-			if op == "+" {
-				value += operand
-			}
-			else if op == "*" {
-				value *= operand
-			}
-			else {
-				print("Unexpected operator: \(op)")
+		// At this point, there are no more parentheses.
+		// Adds have precedence, do them
+		for (op, regex) in [("+", addRegex), ("*", multRegex)] {
+			range = NSRange(location: 0, length: mutableInput.utf16.count)
+			while let match = regex?.firstMatch(in: mutableInput, options: [], range: range) {
+				if let rExpr = Range(match.range(at: 0), in: mutableInput),
+				   let rOperand1 = Range(match.range(at: 1), in: mutableInput),
+				   let rOperand2 = Range(match.range(at: 2), in: mutableInput) {
+					if let operand1 = Int(mutableInput[rOperand1]),
+					   let operand2 = Int(mutableInput[rOperand2]) {
+						var result = ""
+						if op == "+" {
+							result = String(operand1 + operand2)
+						}
+						else {
+							result = String(operand1 * operand2)
+						}
+						mutableInput.replaceSubrange(rExpr, with: result)
+					}
+				}
+				range = NSRange(location: 0, length: mutableInput.utf16.count)
 			}
 		}
-		//print("Answer: \(value)")
-		return value
+		
+		// Should only be string of digits left
+		//print("Answer: \(mutableInput)")
+		return Int(mutableInput)!
 	}
 	
 	static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
@@ -131,6 +122,8 @@ public class Day18 {
 	static func createRegularExpressions() -> Bool {
 		do {
 			parenRegex = try NSRegularExpression(pattern: parenRedef, options: [])
+			addRegex = try NSRegularExpression(pattern: addRedef, options: [])
+			multRegex = try NSRegularExpression(pattern: multRedef, options: [])
 		} catch {
 			print("Error creating regular expression.")
 			return false
