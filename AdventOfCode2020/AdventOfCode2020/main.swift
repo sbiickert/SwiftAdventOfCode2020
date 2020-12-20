@@ -7,5 +7,5 @@
 
 import Foundation
 
-Day18.solve(testing: true)
+Day19.solve(testing: true)
 
