@@ -96,10 +96,11 @@ public class Day20 {
 				singleTile.flipHorizontal()
 			}
 		}
-		let nHashesInMonsters = 15 * monsterCount
+		print(singleTile)
+		//let nHashesInMonsters = 15 * monsterCount
 		let nHashesInTile = singleTile.count(string: "#")
 		print("The number of monsters is \(monsterCount)")
-		print("The number of non-monster # characters is \(nHashesInTile - nHashesInMonsters)")
+		print("The number of # characters is \(nHashesInTile)")
 	}
 	
 	private static func getMosaic(_ board: [[Tile?]], debug: Bool = false) -> [[Tile]] {
@@ -200,7 +201,8 @@ private struct Coord2D {
 }
 
 private class Tile: CustomStringConvertible {
-	private static let monsterRedef = "#.{X}#.{4}##.{4}###.{X}#.{2}#.{2}#.{2}#.{2}#.{2}#"
+	private static let monsterRedef = "(#).{X}(#).{4}(##).{4}(##).{4}(###).{X}(#).{2}(#).{2}(#).{2}(#).{2}(#).{2}(#)"
+	private static let monsterGroupCount = 11 // Number of matching groups () in above
 	
 	enum Side: Int, CaseIterable {
 		case top = 0
@@ -356,13 +358,30 @@ private class Tile: CustomStringConvertible {
 		guard mRegex != nil else {
 			return 0
 		}
-		let data = exportData().joined()
-		let range = NSRange(location: 0, length: data.utf16.count)
-		if let matches = mRegex?.matches(in: data, options: [], range: range) {
-			return matches.count
+		var data = exportData().joined()
+		var monsterCount = 0
+		var additionalMonsterCount = 999
+		while additionalMonsterCount > 0 {
+			additionalMonsterCount = 0
+			let range = NSRange(location: 0, length: data.utf16.count)
+			if let matches = mRegex?.matches(in: data, options: [], range: range) {
+				additionalMonsterCount = matches.count
+				monsterCount += additionalMonsterCount
+				
+				// Replace monster # with O
+				for match in matches {
+					for i in 1...Tile.monsterGroupCount {
+						if let r = Range(match.range(at: i), in: data) {
+							let length = r.upperBound.utf16Offset(in: data) - r.lowerBound.utf16Offset(in: data)
+							data.replaceSubrange(r, with: String(repeating: "O", count: length))
+						}
+					}
+				}
+			}
 		}
+		_matrix.grid = Array(data).map({String($0)})
 
-		return 0
+		return monsterCount
 	}
 	
 	func count(string: String) -> Int {

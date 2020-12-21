@@ -22,5 +22,5 @@ import Cocoa
 //Day17.solve()
 //Day18.solve(testing: false)
 // FAILED Day19.solve(testing: true)
-// PART 2 incomplete Day20.solve()
-Day21.solve(testing: false)
+//Day20.solve()
+//Day21.solve(testing: false)
