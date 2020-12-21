@@ -3,7 +3,7 @@ import Foundation
 public class Day20 {
 	
 	public static func solve() {
-		let input = readGroupedInputFile(named: "Day20_Sample")
+		let input = readGroupedInputFile(named: "Day20_Input")
 		
 		var tiles = [Tile]()
 		for group in input {
@@ -58,32 +58,101 @@ public class Day20 {
 			tile = board[ptr.y][ptr.x]!
 		}
 		
-		let idGrid = getMosaicIDs(board)
+		let tileGrid = getMosaic(board)
+		let singleTile = joinTiles(tileGrid)
+		print(singleTile)
+		print("Finding monsters...")
+		var monsterCount = 0
+		for flip in ["", "v", "h"] {
+			if flip == "v" {
+				print("flip V")
+				singleTile.flipVertical()
+			}
+			else if flip == "h" {
+				print("flip H")
+				singleTile.flipHorizontal()
+			}
+			for _ in 0..<4 {
+				let foundMonsterCount = singleTile.findSeaMonsters()
+				if foundMonsterCount > 0 {
+					print("Found \(foundMonsterCount) monsters")
+					monsterCount = max(monsterCount, foundMonsterCount)
+					print(singleTile.exportData().joined())
+					//break
+				}
+				print("rotating")
+				singleTile.rotate(times: 1)
+			}
+			if monsterCount > 0 {
+				//break
+			}
+			// Revert
+			if flip == "v" {
+				print("flip V revert")
+				singleTile.flipVertical()
+			}
+			else if flip == "h" {
+				print("flip H revert")
+				singleTile.flipHorizontal()
+			}
+		}
+		let nHashesInMonsters = 15 * monsterCount
+		let nHashesInTile = singleTile.count(string: "#")
+		print("The number of monsters is \(monsterCount)")
+		print("The number of non-monster # characters is \(nHashesInTile - nHashesInMonsters)")
 	}
 	
-	private static func getMosaicIDs(_ board: [[Tile?]], debug: Bool = false) -> [[Int]] {
+	private static func getMosaic(_ board: [[Tile?]], debug: Bool = false) -> [[Tile]] {
 		var idGrid = [[Int]]()
-		var idRow = [Int]()
+		var tileGrid = [[Tile]]()
+		var tileRow = [Tile]()
 		for (i, row) in board.enumerated() {
 			for (j, t) in row.enumerated() {
 				if let tile = t {
-					idRow.append(tile.id)
+					tileRow.append(tile)
 					if debug {
 						print("x: \(j), y: \(i)")
 						print(tile)
 						print("") // Newline spacer
 					}
 				}
-				else if idRow.count > 0 {
-					idGrid.append(idRow)
-					idRow = [Int]()
+				else if tileRow.count > 0 {
+					idGrid.append(tileRow.map{$0.id})
+					tileGrid.append(tileRow)
+					tileRow = [Tile]()
 				}
 			}
 		}
 		print(idGrid)
 		let corners: [Int] = [idGrid[0].first!, idGrid[0].last!, idGrid[idGrid.count-1].first!, idGrid[idGrid.count-1].last!]
 		print("Answer: \(corners.reduce(1, *))")
-		return(idGrid)
+		return(tileGrid)
+	}
+	
+	private static func joinTiles(_ tileGrid: [[Tile]]) -> Tile {
+		for row in tileGrid {
+			for tile in row {
+				tile.inset()
+			}
+		}
+		print(tileGrid[0][0])
+		var joined = ["Tile 66:"]
+		for row in tileGrid {
+			var rowData: [String]?
+			for tile in row {
+				let data = tile.exportData()
+				if rowData == nil {
+					rowData = data
+				}
+				else {
+					for (i, tileRow) in data.enumerated() {
+						rowData![i] += tileRow
+					}
+				}
+			}
+			joined.append(contentsOf: rowData!)
+		}
+		return Tile(data: joined)
 	}
 	
 	static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
@@ -131,6 +200,8 @@ private struct Coord2D {
 }
 
 private class Tile: CustomStringConvertible {
+	private static let monsterRedef = "#.{X}#.{4}##.{4}###.{X}#.{2}#.{2}#.{2}#.{2}#.{2}#"
+	
 	enum Side: Int, CaseIterable {
 		case top = 0
 		case right = 1
@@ -250,6 +321,52 @@ private class Tile: CustomStringConvertible {
 	
 	func flipVertical() {
 		_matrix.flipVertical()
+	}
+	
+	func inset() {
+		let oldSize = _matrix.size
+		var data = _matrix.exportData()
+		data.removeFirst()
+		data.removeLast()
+		for (i, var row) in data.enumerated() {
+			row.removeFirst()
+			row.removeLast()
+			data[i] = row
+		}
+		var smallerMatrix = Matrix(rows: oldSize.h-2, columns: oldSize.w-2)
+		smallerMatrix.importData(data)
+		self._matrix = smallerMatrix
+	}
+	
+	func exportData() -> [String] {
+		return _matrix.exportData()
+	}
+	
+	func findSeaMonsters() -> Int {
+		let monsterWidth = 20
+		let wrapWidth = _matrix.size.w - monsterWidth + 1
+		let mRedef = Tile.monsterRedef.replacingOccurrences(of: "X", with: String(wrapWidth))
+		//print("Using regular expression \(mRedef)")
+		var mRegex: NSRegularExpression?
+		do {
+			mRegex = try NSRegularExpression(pattern: mRedef, options: [])
+		} catch {
+			print("Error creating regular expression.")
+		}
+		guard mRegex != nil else {
+			return 0
+		}
+		let data = exportData().joined()
+		let range = NSRange(location: 0, length: data.utf16.count)
+		if let matches = mRegex?.matches(in: data, options: [], range: range) {
+			return matches.count
+		}
+
+		return 0
+	}
+	
+	func count(string: String) -> Int {
+		return _matrix.grid.filter({$0 == string}).count
 	}
 }
 
