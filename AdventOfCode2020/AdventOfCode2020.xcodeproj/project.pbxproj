@@ -15,6 +15,7 @@
 		B8C1826925840EAB00A6C860 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C1826825840EAB00A6C860 /* main.swift */; };
 		B8C1827125840F0900A6C860 /* Day10.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8C1827025840F0800A6C860 /* Day10.swift */; };
 		B8D5B76C258D214E000E7B7B /* Day18.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8D5B76B258D214E000E7B7B /* Day18.swift */; };
+		B8FDD23D2593A87400571341 /* Day23.swift in Sources */ = {isa = PBXBuildFile; fileRef = B8FDD23C2593A87300571341 /* Day23.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -41,6 +42,7 @@
 		B8C1826825840EAB00A6C860 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		B8C1827025840F0800A6C860 /* Day10.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Day10.swift; path = ../../AdventOfCode2020.playground/Sources/Day10.swift; sourceTree = "<group>"; };
 		B8D5B76B258D214E000E7B7B /* Day18.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Day18.swift; path = ../../AdventOfCode2020.playground/Sources/Day18.swift; sourceTree = "<group>"; };
+		B8FDD23C2593A87300571341 /* Day23.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Day23.swift; path = ../../AdventOfCode2020.playground/Sources/Day23.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 				B8D5B76B258D214E000E7B7B /* Day18.swift */,
 				B84F4873258E73CE00C96911 /* Day19.swift */,
 				B887B79B25926A8C001B6C2C /* Day22.swift */,
+				B8FDD23C2593A87300571341 /* Day23.swift */,
 			);
 			path = AdventOfCode2020;
 			sourceTree = "<group>";
@@ -200,6 +203,7 @@
 				B8C1826925840EAB00A6C860 /* main.swift in Sources */,
 				B8D5B76C258D214E000E7B7B /* Day18.swift in Sources */,
 				B887B79C25926A8C001B6C2C /* Day22.swift in Sources */,
+				B8FDD23D2593A87400571341 /* Day23.swift in Sources */,
 				B836F6A0258BD2B3004F263F /* Day17.swift in Sources */,
 				B84F4874258E73CF00C96911 /* Day19.swift in Sources */,
 				B8C1827125840F0900A6C860 /* Day10.swift in Sources */,
