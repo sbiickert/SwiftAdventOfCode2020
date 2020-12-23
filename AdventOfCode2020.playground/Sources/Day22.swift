@@ -85,16 +85,17 @@ public class Day22 {
 		return winningHand
 	}
 	
-	//static var inputBundle: Bundle = Bundle.main
-	static var inputBundle: Bundle {
-		let currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-		let bundleURL = URL(fileURLWithPath: "AoCInput.bundle", relativeTo: currentDirectoryURL)
-		return Bundle(url: bundleURL)!
-	}
+//	static var inputBundle: Bundle {
+//		let currentDirectoryURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+//		let bundleURL = URL(fileURLWithPath: "AoCInput.bundle", relativeTo: currentDirectoryURL)
+//		return Bundle(url: bundleURL)!
+//	}
 	
 	static func readInputFile(named name:String, removingEmptyLines removeEmpty:Bool) -> [String] {
 		var results = [String]()
-		if let inputPath = inputBundle.path(forResource: name, ofType: "txt") {
+		let b = Bundle.main
+		//let b = inputBundle
+		if let inputPath = b.path(forResource: name, ofType: "txt") {
 			do {
 				let input = try String(contentsOfFile: inputPath)
 				results = input.components(separatedBy: "\n")
