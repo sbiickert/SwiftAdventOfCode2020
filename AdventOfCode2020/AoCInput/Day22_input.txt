@@ -12,7 +12,7 @@ Player 2:
 7
 10
 
-Player 1:
+Me:
 29
 25
 9
@@ -39,7 +39,7 @@ Player 1:
 47
 10
 
-Player 2:
+The Crab:
 46
 27
 44
