@@ -25,3 +25,9 @@ It's been interesting. While the first few days were very heavy on the text proc
 I would say that the bigger influence on my solutions is not the language, but the programmer. I have habits that come from my days doing business programming, where the clarity of the object model and the way things get called takes precedence over a "clever" algorithm. Day 11 was the epitome of that: I'm sure there were ways to solve the Waiting Area problem in 1/10th the code, but in the end the code just showed the way I thought about it.
 
 I am jealous of those with the skills to do these challenges in really odd environments, like C64 assembly and other weird things. But I'd say most people would think my choice of Swift was weird, in its own way.
+
+## Thoughts 21 Days In
+
+Now the road gets bumpy. Day 19 was a complete failure: not even a brute-force attempt got me to part 2. Day 20 was code I was proud of, but when submitting the answer for part 2, the system told me it was wrong. Only 1/4 stars for two day's work. I thought maybe my advent was coming to an end where my skills ran out. But today I got two stars and part 2 was just an extra print statement away with no extra work.
+
+My achilles heel is recursion. For some reason, I have trouble visualizing deeply-nested calls and what state will come back when the functions unwind. And then my image-jigsaw-tiling solutioning for Day 20 was spot on, and you'd think that would be harder.
