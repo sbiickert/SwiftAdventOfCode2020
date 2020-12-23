@@ -6,7 +6,6 @@ public class Day23 {
 	private static let MAX_ITER = 10000000 //100 pt1 10000000 pt2
 	private static let EXTRA_CUPS = true
 	private static let EXTRA_CUPS_MAX = 1000000
-	private static let PICK_UP = 3
 	
 	private static var currentCup = Cup(value: 0) // Placeholder
 	private static var cups = Dictionary<Int, Cup>()
@@ -77,7 +76,7 @@ public class Day23 {
 	}
 	
 	private static func iterate() {
-		// Extract next PICK_UP numbers from cups
+		// Extract next 3 numbers from cups
 		let pickedUpCups = pickUpCups()
 		//print(pickedUpCups)
 		
@@ -105,21 +104,21 @@ public class Day23 {
 	private static func insert(cups addedCups: [Cup], after: Cup) {
 		// Assume the addedCups are linked
 		let temp = after.next!
-		after.next = addedCups.first!
-		addedCups.first!.prev = after
-		temp.prev = addedCups.last!
-		addedCups.last!.next = temp
+		let lastIndex = addedCups.count-1
+		after.next = addedCups[0]
+		addedCups[0].prev = after
+		temp.prev = addedCups[lastIndex]
+		addedCups[lastIndex].next = temp
 	}
 	
 	private static func pickUpCups() -> [Cup] {
-		var pickedUp = [Cup]()
-		var ptr = currentCup
-		for _ in 1...PICK_UP {
-			ptr = ptr.next!
-			pickedUp.append(ptr)
-		}
+		let ptr1 = currentCup.next!
+		let ptr2 = ptr1.next!
+		let ptr3 = ptr2.next!
+		let pickedUp = [ptr1, ptr2, ptr3]
+		
 		// Break and close the ring
-		let cupAfterBreak = ptr.next!
+		let cupAfterBreak = ptr3.next!
 		currentCup.next = cupAfterBreak
 		cupAfterBreak.prev = currentCup
 		
