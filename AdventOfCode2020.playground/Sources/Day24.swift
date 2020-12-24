@@ -1,7 +1,7 @@
 import Foundation
 
 public class Day24 {
-	
+	private static let MAX_ITER = 100
 	private static var tileColorAt = Dictionary<HexCoord, HexTileColor>()
 	
 	public static func solve(testing: Bool) {
@@ -15,7 +15,56 @@ public class Day24 {
 			paths.append(path)
 			//break
 		}
+		setupTiles(paths: paths)
+		print("Start: \(blackCount) black tiles.")
 
+		for i in 1...MAX_ITER {
+			iterateGameOfLife()
+			print("Day \(i): \(blackCount)")
+		}
+	}
+	
+	static func iterateGameOfLife() {
+		// Just grabbing black tiles
+		var evalMap = tileColorAt.filter({$0.value == .black})
+		// Need to eval neighbouring whites, too
+		for (coord, _) in tileColorAt.filter({$0.value == .black}) {
+			let neighbours = coord.allNeighbours
+			for n in neighbours {
+				if evalMap[n] == nil {
+					evalMap[n] = .white
+				}
+			}
+		}
+		// Apply rules
+		var resultMap = Dictionary<HexCoord, HexTileColor>()
+		for (coord, color) in evalMap {
+			let neighbours = coord.allNeighbours
+			var countBlackNeighbours = 0
+			for n in neighbours {
+				if tileColorAt[n] ?? .white == .black {
+					countBlackNeighbours += 1
+				}
+			}
+			if color == .black {
+				let changeToWhite = countBlackNeighbours == 0 || countBlackNeighbours > 2
+				resultMap[coord] = changeToWhite ? .white : .black
+			}
+			if color == .white {
+				let changeToBlack = countBlackNeighbours == 2
+				resultMap[coord] = changeToBlack ? .black : .white
+			}
+		}
+		
+		tileColorAt = resultMap
+	}
+	
+	static var blackCount: Int {
+		// Count the black tiles
+		return tileColorAt.values.filter({$0 == .black}).count
+	}
+	
+	static func setupTiles(paths: [[HexDir]]) {
 		tileColorAt.removeAll()
 		
 		for path in paths {
@@ -33,10 +82,6 @@ public class Day24 {
 				tileColorAt[coord] = .white
 			}
 		}
-		
-		// Count the black tiles
-		let blackCount = tileColorAt.values.filter({$0 == .black}).count
-		print("There are \(blackCount) black tiles.")
 	}
 	
 	static func walk(path: [HexDir], startingAt start: HexCoord) -> HexCoord {
@@ -168,6 +213,14 @@ struct HexCoord: Hashable, CustomStringConvertible {
 			nx = x + 1
 		}
 		return HexCoord(x: nx, y: ny)
+	}
+	
+	var allNeighbours: [HexCoord] {
+		var neighbours = [HexCoord]()
+		for dir in HexDir.allCases {
+			neighbours.append(neighbor(at: dir))
+		}
+		return neighbours
 	}
 	
 	var debugDescription: String {
