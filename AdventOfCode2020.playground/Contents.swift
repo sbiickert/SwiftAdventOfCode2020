@@ -26,5 +26,7 @@ import Cocoa
 //Day21.solve(testing: false)
 //Day22.solve(testing: false)
 //Day23.solve()
+//Day24.solve(testing: false)
 
-Day24.solve(testing: false)
+Day25.solve()
+
