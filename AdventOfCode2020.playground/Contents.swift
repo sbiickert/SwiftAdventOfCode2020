@@ -21,12 +21,19 @@ import Cocoa
 //Day16.solve()
 //Day17.solve()
 //Day18.solve(testing: false)
-// FAILED Day19.solve(testing: true)
+
+//Day19.solve(testing: true)
+
 //Day20.solve()
 //Day21.solve(testing: false)
 //Day22.solve(testing: false)
 //Day23.solve()
 //Day24.solve(testing: false)
 
-Day25.solve()
+//Day25.solve()
 
+let line = "0: 4 1 5"
+let cs = CharacterSet(charactersIn: "ab")
+let value = "\"b\""
+let filtered = String(value.unicodeScalars.filter({cs.contains($0)}))
+filtered
