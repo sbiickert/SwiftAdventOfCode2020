@@ -31,3 +31,9 @@ I am jealous of those with the skills to do these challenges in really odd envir
 Now the road gets bumpy. Day 19 was a complete failure: not even a brute-force attempt got me to part 2. Day 20 was code I was proud of, but when submitting the answer for part 2, the system told me it was wrong. Only 1/4 stars for two day's work. I thought maybe my advent was coming to an end where my skills ran out. But today I got two stars and part 2 was just an extra print statement away with no extra work.
 
 My achilles heel is recursion. For some reason, I have trouble visualizing deeply-nested calls and what state will come back when the functions unwind. And then my image-jigsaw-tiling solutioning for Day 20 was spot on, and you'd think that would be harder.
+
+## Thoughts at the End
+
+It's done! I didn't think I would have time on Christmas to do the last day, but it turned out to be trivial as long as you can follow directions. At only 57 lines of code, it was over quickly. But then I found out that you didn't get the big "huzzah" at the end unless you got full stars on all the previous days, too. Since I got stumped on Day 19, I was only at 47 stars. I sat on it for about a day before making up my mind that I would get Day 19 done. I found (a published solution)[https://dev.to/qviper/advent-of-code-2020-python-solution-day-19-4p9d] in Python, and did the work of translating it to Swift. It was not trivial, but I knew that I would get there eventually.
+
+And so now it's done. I'm really happy and energized about it. I needed help for 3 of the 25 days and there is a lot of code here that I'm proud of. Definitely will make time for AoC next year.
