@@ -10,16 +10,10 @@ use lib $directory;
 
 use Modern::Perl;
 use autodie;
-#use Data::Dumper;
 use Algorithm::Combinatorics 'combinations';
-#use Storable 'dclone';
-#use AOC::Geometry qw(Point2D Line2D);
 
 my $INPUT_PATH = './input';
-
-#my $INPUT_FILE = '01.test.txt';
 my $INPUT_FILE = '01.challenge.txt';
-
 my @input = parse_input("$INPUT_PATH/$INPUT_FILE");
 
 solve_part_one(@input);
