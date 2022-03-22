@@ -20,6 +20,55 @@ package Passport;
 				$self->pid ne '';
 	}
 	
+	sub is_valid {
+		my $self = shift;
+		return $self->is_complete() && $self->byr_is_valid() && $self->iyr_is_valid()
+			&& $self->eyr_is_valid() && $self->hgt_is_valid() && $self->hcl_is_valid()
+		 	&& $self->ecl_is_valid() && $self->pid_is_valid();
+	}
+	
+	sub byr_is_valid {
+		my $self = shift;
+		return (1920 <= $self->byr && $self->byr <= 2002);
+	}
+	
+	sub iyr_is_valid {
+		my $self = shift;
+		return (2010 <= $self->iyr && $self->iyr <= 2020);
+	}
+	
+	sub eyr_is_valid {
+		my $self = shift;
+		return (2020 <= $self->eyr && $self->eyr <= 2030);
+	}
+	
+	sub hgt_is_valid {
+		my $self = shift;
+		if ($self->hgt =~ m/(\d+)cm/) {
+			return (150 <= $1 && $1 <= 193);
+		}
+		elsif ($self->hgt =~ m/(\d+)in/) {
+			return (59 <= $1 && $1 <= 76);
+		}
+		return 0;
+	}
+	
+	sub hcl_is_valid {
+		my $self = shift;
+		return $self->hcl =~ m/#[a-f0-9]{6}/;
+	}
+	
+	sub ecl_is_valid {
+		my $self = shift;
+		my @valid_ecl = qw(amb blu brn gry grn hzl oth);
+		return grep { $_ eq $self->ecl } @valid_ecl;
+	}
+	
+	sub pid_is_valid {
+		my $self = shift;
+		return $self->pid =~ m/^\d{9}$/;
+	}
+	
 	no Moose;
 __PACKAGE__->meta->make_immutable;
 
@@ -40,17 +89,19 @@ solve_part_two(@passports);
 exit( 0 );
 
 sub solve_part_one {
-	my $complete_count = 0;
-	
-	for my $passport (@passports) {
-		$complete_count++ if $passport->is_complete();
-	}
+	my @complete_passports = grep { $_->is_complete() } @passports;
+	my $complete_count = scalar @complete_passports;
 	
 	say 'Part One';
 	say "The number of complete passports is $complete_count";
 }
 
 sub solve_part_two {
+	my @valid_passports = grep { $_->is_valid() } @passports;
+	my $valid_count = scalar @valid_passports;
+	
+	say 'Part Two';
+	say "The number of valid passports is $valid_count";
 }
 
 sub parse_input {
@@ -69,6 +120,7 @@ sub parse_input {
 			%values = ();
 			next;
 		}
+		# Find key:value pairs on the line and push into hash
 		while ($line =~ m/([a-z]{3}):(\S+)/g) {
 			$values{$1} = $2;
 		}
