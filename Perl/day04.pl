@@ -82,8 +82,8 @@ my $INPUT_PATH = './input';
 my $INPUT_FILE = '04.challenge.txt';
 my @passports = parse_input("$INPUT_PATH/$INPUT_FILE");
 
-solve_part_one(@passports);
-solve_part_two(@passports);
+solve_part_one();
+solve_part_two();
 
 
 exit( 0 );
