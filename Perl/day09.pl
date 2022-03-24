@@ -6,7 +6,6 @@ use Modern::Perl;
 use autodie;
 use Data::Dumper;
 use Algorithm::Combinatorics 'combinations';
-use List::Util 'reduce';
 
 my $INPUT_PATH = './input';
 #my $INPUT_FILE = '09.test.txt';
@@ -54,8 +53,7 @@ sub find_two_numbers_adding_to {
 	while (my $combo = $iter->next) {
 		return 1 if (($combo->[0] + $combo->[1] == $sum) and ($combo->[0] != $combo->[1]));
 	}
-	say 'failed to find 2 numbers';
-	return 0;
+	return 0; # Could not find numbers adding to $sum. $sum is the invalid number.
 }
 
 sub find_range_adding_to {
@@ -63,9 +61,9 @@ sub find_range_adding_to {
 	my @numbers = @$numbers_ref;
 	
 	for my $i (0..$#numbers) {
+		my $sum_of_range = $numbers[$i];
 		for my $j ($i+1..$#numbers) {
-			my @range = @numbers[$i..$j];
-			my $sum_of_range = reduce {$a + $b} @range;
+			$sum_of_range += $numbers[$j];
 			last if $sum_of_range > $sum;
 			return ($i, $j) if ($sum_of_range == $sum);
 		}
