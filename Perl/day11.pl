@@ -30,7 +30,7 @@ exit( 0 );
 sub solve_part_one {
 	my $grid = dclone(shift);
 	my $gcopy = Grid2D->new('width' => $grid->width, 'height' => $grid->height,
-						    'default' => '.', 'data' => []);
+						    'default' => '.');
 	
 	my $iter_count = 0;
 	while (1) {
@@ -63,7 +63,7 @@ sub solve_part_one {
 sub solve_part_two {
 	my $grid = dclone(shift);
 	my $gcopy = Grid2D->new('width' => $grid->width, 'height' => $grid->height,
-						    'default' => '.', 'data' => []);
+						    'default' => '.', 'data' => {});
 	
 	my $iter_count = 0;
 	while (1) {
@@ -122,7 +122,7 @@ sub parse_input {
 	close $input;
 	
 	my $grid = Grid2D->new('width' => length($content[0])-1, 'height' => scalar(@content),
-						   'default' => '.', 'data' => []);
+						   'default' => '.', 'data' => {});
 	
 	for (my $r = 0; $r <= $#content; $r++) {
 		my $row = $content[$r];

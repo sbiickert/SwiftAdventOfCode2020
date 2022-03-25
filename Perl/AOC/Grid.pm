@@ -11,21 +11,21 @@ $AOC::Grid::neighbor_rule = 'rook'; # bishop, queen/king
 package Grid2D;
 	use Moose;
 
-	has 'width' =>   ('is' => 'rw', 'isa' => 'Int');
-	has 'height' =>  ('is' => 'rw', 'isa' => 'Int');
-	has 'default' => ('is' => 'rw', 'isa' => 'Str');
-	has 'data' =>	 ('is' => 'rw', 'isa' => 'ArrayRef[ArrayRef[Any]]');
-
+	has 'width' =>   ('is' => 'rw', 'isa' => 'Int', 'default' => 5);
+	has 'height' =>  ('is' => 'rw', 'isa' => 'Int', 'default' => 5);
+	has 'default' => ('is' => 'rw', 'isa' => 'Str', 'default' => '.');
+	has 'data' =>	 ('is' => 'rw', 'isa' => 'HashRef[Str]', 'default' => sub { {} });
+	
 	sub get {
 		my ($self, $row, $col) = @_;
-		return $self->default if $row < 0 or $col < 0;
-		return $self->default if $row >= $self->height or $col >= $self->width;
-		return $self->data->[$row][$col] || $self->default;
+		my $key = "$row:$col";
+		return $self->data->{$key} || $self->default;
 	}
 
 	sub set {
 		my ($self, $value, $row, $col) = @_;
-		$self->data->[$row][$col] = $value;
+		my $key = "$row:$col";
+		$self->data->{$key} = $value;
 	}
 
 	sub coords {
