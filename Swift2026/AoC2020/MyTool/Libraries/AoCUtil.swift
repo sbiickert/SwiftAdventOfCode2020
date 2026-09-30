@@ -141,6 +141,10 @@ class AoCUtil {
 		}
 		return result
 	}
+	
+	static func xor(_ b1:Bool, _ b2: Bool) -> Bool {
+		return (b1 || b2) && !(b1 && b2)
+	}
 }
 
 

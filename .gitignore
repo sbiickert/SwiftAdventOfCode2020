@@ -2,6 +2,7 @@
 Perl/.DS_Store
 Perl/AOC/.DS_Store
 Perl/.pls-tmp-zsvXGUqpu8
+Perl/input/*challenge.txt
 .DS_Store
 .DS_Store
 .pls_cache/index
@@ -9,4 +10,4 @@ Perl/nytprof.out
 Perl/nytprof/
 .DS_Store
 AdventOfCode2020.playground/Resources/*_Input.txt
-*.txt
+Swift2026/Input/*_challenge.txt
