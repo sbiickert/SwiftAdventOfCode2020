@@ -19,31 +19,33 @@ class Day03: AoCSolution {
 		let map = AoCGrid2D()
 		map.load(data: input.textLines)
 		
-		let p1 = solvePartOne(map: map)
+		let p1Runs = [(3,1)]
+		let p1 = solvePart(map: map, runs: p1Runs)
 		
-		return AoCResult(part1: "The number of impacted trees is \(p1)", part2: "sync")
+		let p2Runs = [(1,1),(3,1),(5,1),(7,1),(1,2)]
+		let p2 = solvePart(map: map, runs: p2Runs)
+		
+		return AoCResult(part1: "The number of impacted trees is \(p1)", part2: "Product of impacts on trajectories: \(p2)")
 	}
 	
-	func solvePartOne(map: AoCGrid2D) -> Int {
-		return traverse(map: map, down: 1, right: 3)
+	func solvePart(map: AoCGrid2D, runs:[(Int,Int)]) -> Int {
+		let impacts = runs.map { slide(map: map, right: $0.0, down: $0.1) }
+		return impacts.reduce(1, *)
 	}
-	
-	func traverse(map: AoCGrid2D, down: Int, right: Int) -> Int {
-		let start = AoCCoord2D.origin
+
+	func slide(map: AoCGrid2D, right: Int, down: Int) -> Int {
 		let offset = AoCCoord2D(x: right, y: down)
 		let xMax = map.extent!.max.x
 		let yMax = map.extent!.max.y
 
-		var location = start
+		var location = AoCCoord2D.origin
 		var impacts = 0
-		while location.y <= yMax {
+		while location.y < yMax {
 			location = location + offset
-			if (location.x > xMax) {
+			if (location.x > xMax) { // Wrap horizontally
 				location = AoCCoord2D(x: location.x - (xMax+1), y: location.y)
 			}
-			//print(location)
 			if map.stringValue(at: location) == "#" {
-			//	print("bang")
 				impacts += 1
 			}
 		}
