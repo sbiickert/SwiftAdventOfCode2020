@@ -46,6 +46,8 @@ struct Passport {
 		return false
 	}
 	
+	static let eyeColors = Set(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"])
+
 	var isValidPartTwo: Bool {
 		guard isValidPartOne else { return false }
 		
@@ -85,16 +87,13 @@ struct Passport {
 				else { isValid = false }
 				
 			case .hairColor:
-				if let _ = fieldValue.firstMatch(of: /^#[0-9a-f]{6}$/) {}
-				else { isValid = false }
+				if fieldValue.firstMatch(of: /^#[0-9a-f]{6}$/) == nil {isValid = false}
 				
 			case .eyeColor:
-				let colors = Set(["amb", "blu", "brn", "gry", "grn", "hzl", "oth"])
-				if colors.contains(fieldValue) == false { isValid = false }
+				if Passport.eyeColors.contains(fieldValue) == false { isValid = false }
 				
 			case .passportID:
-				if let _ = fieldValue.firstMatch(of: /^\d{9}$/) {}
-				else { isValid = false }
+				if fieldValue.firstMatch(of: /^\d{9}$/) == nil { isValid = false }
 
 			case .countryID: break
 				
