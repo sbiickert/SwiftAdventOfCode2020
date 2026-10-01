@@ -21,7 +21,8 @@ class Day06: AoCSolution {
 		let p1 = answers.map({$0.questionsSomeoneAnswered.count}).reduce(0, +)
 		let p2 = answers.map({$0.questionsEveryoneAnswered.count}).reduce(0, +)
 		
-		return AoCResult(part1: "The count of questions someone answered is \(p1)", part2: "The count of questions everyone answered is \(p2)")
+		return AoCResult(part1: "The count of questions someone answered is \(p1)",
+						 part2: "The count of questions everyone answered is \(p2)")
 	}
 }
 
