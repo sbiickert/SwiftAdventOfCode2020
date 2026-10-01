@@ -16,12 +16,18 @@ class Day07: AoCSolution {
 	override func solve(_ input: AoCInput) -> AoCResult {
 		super.solve(input)
 		
-		let sacks = input.textLines.map { Haversack(defn: $0) }
-		
+		var sacks = input.allInputGroups[0].map { Haversack(defn: $0) }
 		let p1 = solvePartOne(sacks)
 		
+		if input.fileName.contains(/test/) {
+			sacks = input.allInputGroups[1].map { Haversack(defn: $0) }
+		}
+		
+		let sacksLookup = Dictionary(uniqueKeysWithValues: sacks.map { ($0.color, $0) })
+		let p2 = countBags(from: "shiny gold", in: sacksLookup) - 1 // Don't count the shiny gold one
+		
 		return AoCResult(part1: "The number of colors that can contain shiny gold is \(p1)",
-						 part2: "sync")
+						 part2: "The number of bags inside shiny gold is \(p2)")
 	}
 	
 	func solvePartOne(_ sacks: [Haversack]) -> Int {
@@ -42,6 +48,17 @@ class Day07: AoCSolution {
 		}
 
 		return colorsThatCanContainShinyGold.count
+	}
+	
+	func countBags(from color: String, in sacks: Dictionary<String, Haversack>) -> Int {
+		let sack = sacks[color]!
+		var count = 1
+		
+		for rule in sack.rules {
+			count += rule.value * countBags(from: rule.key, in: sacks)
+		}
+		
+		return count
 	}
 	
 	func findContainers(_ sacks: [Haversack]) -> Dictionary<String, [String]> {
