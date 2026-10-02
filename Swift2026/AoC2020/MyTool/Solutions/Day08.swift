@@ -19,14 +19,30 @@ class Day08: AoCSolution {
 		let console = GameConsole(program: input.textLines)
 		
 		let p1 = solvePartOne(console)
-		console.reset()
+		let p2 = solvePartTwo(console)
 		
-		return AoCResult(part1: "The accumulator was \(p1)", part2: "sync")
+		return AoCResult(part1: "The accumulator at the loop was \(p1)", part2: "The final accumulator was \(p2)")
 	}
 	
 	func solvePartOne(_ console: GameConsole) -> Int {
 		if let _ = console.run() {  } // Will return nil
 		return console.accumulator
+	}
+	
+	func solvePartTwo(_ console: GameConsole) -> Int {
+		let originalProgram = console.program
+		
+		for i in 0..<console.program.count {
+			if console.swapJmpNop(at: i) {
+				// Was a change, test
+				console.reset()
+				if let acc = console.run() {
+					return acc
+				}
+				console.program = originalProgram
+			}
+		}
+		return -1
 	}
 }
 
@@ -68,6 +84,18 @@ class GameConsole {
 			ptr += 1
 		}
 	}
+	
+	func swapJmpNop(at index:Int) -> Bool {
+		switch program[index].type {
+		case .jmp:
+			program[index] = GameInstruction(type: .nop, value: program[index].value)
+		case .nop:
+			program[index] = GameInstruction(type: .jmp, value: program[index].value)
+		case .acc:
+			return false
+		}
+		return true
+	}
 }
 
 struct GameInstruction {
@@ -78,6 +106,11 @@ struct GameInstruction {
 		let m = defn.firstMatch(of: /([a-z]+) (.+)/)!
 		type = GameInstructionType(rawValue: String(m.1))!
 		value = Int(String(m.2))!
+	}
+	
+	init(type: GameInstructionType, value: Int) {
+		self.type = type
+		self.value = value
 	}
 }
 
