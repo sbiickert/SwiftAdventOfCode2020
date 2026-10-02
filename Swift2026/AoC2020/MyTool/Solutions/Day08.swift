@@ -30,16 +30,13 @@ class Day08: AoCSolution {
 	}
 	
 	func solvePartTwo(_ console: GameConsole) -> Int {
-		let originalProgram = console.program
-		
-		for i in 0..<console.program.count {
+		for i in 0..<console.programLength {
+			console.reset()
 			if console.swapJmpNop(at: i) {
 				// Was a change, test
-				console.reset()
 				if let acc = console.run() {
 					return acc
 				}
-				console.program = originalProgram
 			}
 		}
 		return -1
@@ -47,24 +44,29 @@ class Day08: AoCSolution {
 }
 
 class GameConsole {
-	var program: [GameInstruction]
-	var ptr: Int = 0
-	var accumulator = 0
-	var history = Set<Int>()
+	private var program: [GameInstruction]
+	private let originalProgram: [GameInstruction]
+	private var ptr: Int = 0
+	private(set) var accumulator = 0
+	private var history = Set<Int>()
 	
 	init(program defn: [String]) {
 		program = defn.map{ GameInstruction(defn: $0) }
+		originalProgram = program
 	}
+	
+	var programLength: Int { return program.count }
 	
 	func reset() {
 		ptr = 0
 		accumulator = 0
 		history.removeAll()
+		program = originalProgram
 	}
 	
 	func run() -> Int? {
 		while ptr < program.count {
-			if history.contains(ptr) { return nil }
+			if history.contains(ptr) { return nil } // Infinite loop found
 			executeInstruction()
 		}
 		return accumulator
@@ -86,12 +88,12 @@ class GameConsole {
 	}
 	
 	func swapJmpNop(at index:Int) -> Bool {
-		switch program[index].type {
-		case .jmp:
-			program[index] = GameInstruction(type: .nop, value: program[index].value)
-		case .nop:
-			program[index] = GameInstruction(type: .jmp, value: program[index].value)
-		case .acc:
+		switch (program[index].type, program[index].value) {
+		case (.jmp, let v):
+			program[index] = GameInstruction(type: .nop, value: v)
+		case (.nop, let v):
+			program[index] = GameInstruction(type: .jmp, value: v)
+		case (.acc, _):
 			return false
 		}
 		return true
