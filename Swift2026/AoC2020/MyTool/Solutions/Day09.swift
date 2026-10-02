@@ -21,8 +21,9 @@ class Day09: AoCSolution {
 		let numbers = input.textLines.compactMap({Int($0)})
 		
 		let p1 = solvePartOne(numbers, size: preambleSize)
+		let p2 = solvePartTwo(numbers, flaw: p1)
 		
-		return AoCResult(part1: "The first invalid number is \(p1)", part2: "sync")
+		return AoCResult(part1: "The first invalid number is \(p1)", part2: "The encryption weakness is \(p2)")
 	}
 	
 	func solvePartOne(_ roNumbers:[Int], size: Int) -> Int {
@@ -37,6 +38,23 @@ class Day09: AoCSolution {
 			}
 			else {
 				return number
+			}
+		}
+		return -1
+	}
+	
+	func solvePartTwo(_ numbers:[Int], flaw: Int) -> Int {
+		for i in 0..<numbers.count {
+			var sum = 0
+			for j in i..<numbers.count {
+				sum += numbers[j]
+				if sum == flaw {
+					let limits = numbers[i...j].minAndMax()!
+					return limits.min + limits.max
+				}
+				else if sum > flaw {
+					break
+				}
 			}
 		}
 		return -1
