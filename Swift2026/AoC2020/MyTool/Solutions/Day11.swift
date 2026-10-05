@@ -16,29 +16,39 @@ class Day11: AoCSolution {
 	override func solve(_ input: AoCInput) -> AoCResult {
 		super.solve(input)
 		
-		let seatingArea = AoCGrid2D(defaultValue: ".", rule: .queen)
+		var seatingArea = AoCGrid2D(defaultValue: ".", rule: .queen)
 		seatingArea.load(data: input.textLines)
+		let p1 = solvePart(seatingArea, part: 1)
 		
-		let p1 = solvePartOne(seatingArea)
-		
-		return AoCResult(part1: "There are \(p1) occupied seats", part2: "sync")
+		seatingArea = AoCGrid2D(defaultValue: ".", rule: .queen)
+		seatingArea.load(data: input.textLines)
+		let p2 = solvePart(seatingArea, part: 2)
+
+		return AoCResult(part1: "There are \(p1) occupied seats",
+						 part2: "There are \(p2) occupied seats")
 	}
 	
-	func solvePartOne(_ seatingArea: AoCGrid2D) -> Int {
+	func solvePart(_ seatingArea: AoCGrid2D, part: Int) -> Int {
 		var adds = Set<AoCCoord2D>()
 		var deletes = Set<AoCCoord2D>()
+		let tolerance = part == 1 ? 4 : 5
 		
 		while true {
 			for coord in seatingArea.coords {
 				let value = seatingArea.stringValue(at: coord)
-				let occupiedNeighborCount = seatingArea.neighbourCoords(at: coord, withValue: "#").count
+				
+				let occupiedNeighborCount =
+					(part == 1) ?
+						countNeighborsP1(coord, in: seatingArea) :
+						countNeighborsP2(coord, in: seatingArea)
+				
 				if value == "L" {
 					if occupiedNeighborCount == 0 {
 						adds.insert(coord)
 					}
 				}
 				else { // value == "#"
-					if occupiedNeighborCount >= 4 {
+					if occupiedNeighborCount >= tolerance {
 						deletes.insert(coord)
 					}
 				}
@@ -58,7 +68,32 @@ class Day11: AoCSolution {
 		}
 		
 		let passengerCount = seatingArea.getCoords(withValue: "#").count
+
 		return passengerCount
+	}
+	
+	func countNeighborsP1(_ coord: AoCCoord2D, in seatingArea: AoCGrid2D) -> Int {
+		return seatingArea.neighbourCoords(at: coord, withValue: "#").count
+	}
+	
+	func countNeighborsP2(_ coord: AoCCoord2D, in seatingArea: AoCGrid2D) -> Int {
+		let ext = seatingArea.extent!
+		var count = 0
+		for offset in seatingArea.neighbourOffsets {
+			var n = coord + offset
+			while ext.contains(n) {
+				let value = seatingArea.stringValue(at: n)
+				if value == "#" {
+					count += 1
+					break
+				}
+				else if value == "L" {
+					break
+				}
+				n = n + offset
+			}
+		}
+		return count
 	}
 }
 
