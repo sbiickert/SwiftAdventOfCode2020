@@ -7,14 +7,43 @@
 
 import Foundation
 
-class AoCGrid2D {
+protocol AoCGrid2D: AnyObject {
+	var defaultValue: String {get}
+	var isTiledInfinitely: Bool {get set}
+	var rule: AoCAdjacencyRule {get set}
+	var extent: AoCExtent2D? {get}
+	var coords: [AoCCoord2D] {get}
+	var histogram: Dictionary<String, Int> {get}
+	var neighbourOffsets: [AoCCoord2D] {get}
+	
+	init(defaultValue: String, rule: AoCAdjacencyRule)
+	
+	func load(data: [String])
+	func stringValue(at coord: AoCCoord2D) -> String
+	func value(at coord: AoCCoord2D) -> Any
+	func setValue(_ v: Any, at coord: AoCCoord2D)
+	func fill(with value:String, at point:AoCCoord2D, filled: inout [AoCCoord2D]) -> Bool
+	func clear(at coord: AoCCoord2D)
+	func getCoords(withValue v: String) -> [AoCCoord2D]
+	func neighbourCoords(at coord: AoCCoord2D) -> [AoCCoord2D]
+	func neighbourCoords(at coord: AoCCoord2D, withValue s: String) -> [AoCCoord2D]
+	func toString(markers: Dictionary<AoCCoord2D, String>?, drawExtent: AoCExtent2D?) -> String
+	func draw(markers: Dictionary<AoCCoord2D, String>?, drawExtent: AoCExtent2D?)
+}
+
+protocol AoCGridRenderable {
+	var glyph: String {get}
+}
+
+
+class AoCDictionaryGrid: AoCGrid2D {
 	let defaultValue: String
 	private var _data = Dictionary<AoCCoord2D, Any>()
 	private var _adjacencyRule: AoCAdjacencyRule = .rook
 	private var _extent: AoCExtent2D?
 	var isTiledInfinitely: Bool = false
-
-	init(defaultValue: String = ".", rule: AoCAdjacencyRule = .rook) {
+	
+	required init(defaultValue: String = ".", rule: AoCAdjacencyRule = .rook) {
 		self.defaultValue = defaultValue
 		_adjacencyRule = rule
 		_extent = nil
@@ -40,7 +69,8 @@ class AoCGrid2D {
 	}
 
 	var rule: AoCAdjacencyRule {
-		return _adjacencyRule
+		get { return _adjacencyRule }
+		set (newRule) { _adjacencyRule = newRule }
 	}
 	
 	var extent: AoCExtent2D? {
@@ -49,7 +79,7 @@ class AoCGrid2D {
 
 	func stringValue(at coord: AoCCoord2D) -> String {
 		let val = value(at: coord)
-		return AoCGrid2D.transformToString(value: val)
+		return AoCDictionaryGrid.transformToString(value: val)
 	}
 	
 	private static func transformToString(value: Any) -> String {
@@ -60,7 +90,6 @@ class AoCGrid2D {
 			return renderable.glyph
 		}
 		return "\(value)"
-		
 	}
 	
 	func value(at coord: AoCCoord2D) -> Any {
@@ -128,6 +157,10 @@ class AoCGrid2D {
 		}
 		return touchedInfinity
 	}
+	
+	func clear(at coord: AoCCoord2D) {
+		_data.removeValue(forKey: coord)
+	}
 
 	func clear(at coord: AoCCoord2D, resetExtent: Bool = false) {
 		_data.removeValue(forKey: coord)
@@ -146,7 +179,7 @@ class AoCGrid2D {
 	
 	func getCoords(withValue v: String) -> [AoCCoord2D] {
 		let result = _data.filter {
-			let str = AoCGrid2D.transformToString(value: $0.value)
+			let str = AoCDictionaryGrid.transformToString(value: $0.value)
 			return str == v
 		}
 		return Array(result.keys)
@@ -180,7 +213,11 @@ class AoCGrid2D {
 		return result
 	}
 	
-	func toString(markers: Dictionary<AoCCoord2D, String>? = nil, drawExtent: AoCExtent2D? = nil) -> String {
+	func toString() -> String {
+		return toString(markers: nil, drawExtent: nil)
+	}
+
+	func toString(markers: Dictionary<AoCCoord2D, String>?, drawExtent: AoCExtent2D?) -> String {
 		var str = ""
 		if var ext = extent {
 			
@@ -210,7 +247,188 @@ class AoCGrid2D {
 	}
 }
 
-protocol AoCGridRenderable {
-	var glyph: String {get}
+class AoCArrayGrid: AoCGrid2D {
+	let defaultValue: String
+	private var _data = [[Any]]()
+	private var _width: Int = 0
+	private var _height: Int = 0
+	var isTiledInfinitely: Bool = false
+	var rule: AoCAdjacencyRule = .rook
+	
+	var extent: AoCExtent2D? {
+		get {
+			guard _width > 0 && _height > 0 else { return nil }
+			return AoCExtent2D(min: AoCCoord2D.origin, max: AoCCoord2D(x: _width - 1, y: _height - 1))
+		}
+		set (newSize) {
+			_data = [[Any]]()
+			if let newSize {
+				_width = newSize.width
+				_height = newSize.height
+				for _ in 0..._height {
+					var row = [Any]()
+					for _ in 0..._width {
+						row.append(defaultValue)
+					}
+					_data.append(row)
+				}
+			}
+			else {
+				_width = 0
+				_height = 0
+			}
+		}
+	}
+	
+	var coords: [AoCCoord2D] {
+		let pairs = zip(0..._width, 0..._height)
+		return pairs.map { AoCCoord2D(x: $0.0, y: $0.1) }
+	}
+	
+	var histogram: Dictionary<String, Int> {
+		var h = Dictionary<String, Int>()
+		let pairs = zip(0..._width, 0..._height)
+		for xy in pairs {
+			let s = stringValue(x: xy.0, y: xy.1)
+			let count = h[s, default: 0]
+			h[s] = count + 1
+		}
+		return h
+	}
+	
+	var neighbourOffsets: [AoCCoord2D] {
+		return AoCCoord2D.getAdjacentOffsets(rule: self.rule)
+	}
+	
+	required init(defaultValue: String, rule: AoCAdjacencyRule) {
+		self.defaultValue = defaultValue
+		self.rule = rule
+	}
+	
+	func load(data: [String]) {
+		guard !data.isEmpty else { return }
+		extent = AoCExtent2D(min: AoCCoord2D.origin, max: AoCCoord2D(x: data[0].count-1, y: data.count-1))
+		let pairs = zip(0..<data[0].count, 0..<data.count)
+		for xy in pairs {
+			let value = String(data[xy.1][xy.0])
+			setValue(value, x: xy.0, y: xy.1)
+		}
+	}
+	
+	func stringValue(x: Int, y: Int) -> String {
+		guard x >= 0 && x < _width else { return defaultValue }
+		guard y >= 0 && x < _height else { return defaultValue }
+		return AoCArrayGrid.transformToString(value: _data[y][x])
+	}
+	
+	func stringValue(at coord: AoCCoord2D) -> String {
+		return stringValue(x: coord.x, y: coord.y)
+	}
+	
+	private static func transformToString(value: Any) -> String {
+		if let str = value as? String {
+			return str
+		}
+		else if let renderable = value as? AoCGridRenderable {
+			return renderable.glyph
+		}
+		return "\(value)"
+	}
+
+	func value(x: Int, y: Int) -> Any {
+		if isTiledInfinitely {
+			let tiledX = AoCUtil.trueMod(num: x, mod: _width)
+			let tiledY = AoCUtil.trueMod(num: y, mod: _height)
+			return _data[tiledY][tiledX]
+		}
+		guard x >= 0 && x < _width else { return defaultValue }
+		guard y >= 0 && x < _height else { return defaultValue }
+		return _data[y][x]
+	}
+	
+	func value(at coord: AoCCoord2D) -> Any {
+		return value(x: coord.x, y: coord.y)
+	}
+	
+	func setValue(_ v: Any, x: Int, y: Int) {
+		guard x >= 0 && x < _width else { return }
+		guard y >= 0 && x < _height else { return }
+		_data[y][x] = v
+	}
+	
+	func setValue(_ v: Any, at coord: AoCCoord2D) {
+		setValue(v, x: coord.x, y: coord.y)
+	}
+	
+	func fill(with value: String, at point: AoCCoord2D, filled: inout [AoCCoord2D]) -> Bool {
+		assert(1 == 0)
+		return false
+	}
+	
+	func clear(x: Int, y: Int) {
+		guard x >= 0 && x < _width else { return }
+		guard y >= 0 && x < _height else { return }
+		_data[y][x] = defaultValue
+	}
+	
+	func clear(at coord: AoCCoord2D) {
+		clear(x: coord.x, y: coord.y)
+	}
+	
+	func getCoordsXY(withValue v: String) -> [(Int,Int)] {
+		let pairs = zip(0..._width, 0..._height)
+		return pairs.filter( { AoCArrayGrid.transformToString(value: _data[$0.1][$0.0]) == v} )
+	}
+	
+	func getCoords(withValue v: String) -> [AoCCoord2D] {
+		var xy = getCoordsXY(withValue: v)
+		return xy.map { AoCCoord2D(x: $0.0, y: $0.1) }
+	}
+	
+	func neighbourCoords(at coord: AoCCoord2D) -> [AoCCoord2D] {
+		return coord.getAdjacentCoords(rule: self.rule)
+	}
+	
+	func neighbourCoords(at coord: AoCCoord2D, withValue s: String) -> [AoCCoord2D] {
+		var result = neighbourCoords(at: coord)
+		result = result.filter { self.stringValue(at: $0) == s }
+		return result
+	}
+	
+	func toString() -> String {
+		return toString(markers: nil, drawExtent: nil)
+	}
+
+	func toString(markers: Dictionary<AoCCoord2D, String>?, drawExtent: AoCExtent2D?) -> String {
+		var str = ""
+		if var ext = extent {
+			
+			if isTiledInfinitely && drawExtent != nil { ext = drawExtent! }
+			
+			for row in ext.min.y...ext.max.y {
+				var values = [String]()
+				for col in ext.min.x...ext.max.x {
+					let coord = AoCCoord2D(x: col, y: row)
+					if let markers = markers,
+					   markers.keys.contains(coord) {
+						values.append(markers[coord]!)
+					}
+					else {
+						values.append(stringValue(at: coord))
+					}
+				}
+				str.append(values.joined(separator: " "))
+				str.append("\n")
+			}
+		}
+		return str
+
+	}
+	
+	func draw(markers: Dictionary<AoCCoord2D, String>?, drawExtent: AoCExtent2D?) {
+		print(self.toString(markers: markers, drawExtent: drawExtent))
+	}
+	
+	
 }
 	

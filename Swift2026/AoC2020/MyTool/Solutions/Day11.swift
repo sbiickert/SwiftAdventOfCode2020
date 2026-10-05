@@ -16,11 +16,11 @@ class Day11: AoCSolution {
 	override func solve(_ input: AoCInput) -> AoCResult {
 		super.solve(input)
 		
-		var seatingArea = AoCGrid2D(defaultValue: ".", rule: .queen)
+		var seatingArea = AoCDictionaryGrid(defaultValue: ".", rule: .queen)
 		seatingArea.load(data: input.textLines)
 		let p1 = solvePart(seatingArea, part: 1)
 		
-		seatingArea = AoCGrid2D(defaultValue: ".", rule: .queen)
+		seatingArea = AoCDictionaryGrid(defaultValue: ".", rule: .queen)
 		seatingArea.load(data: input.textLines)
 		let p2 = solvePart(seatingArea, part: 2)
 

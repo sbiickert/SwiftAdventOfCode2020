@@ -16,7 +16,7 @@ class Day03: AoCSolution {
 	override func solve(_ input: AoCInput) -> AoCResult {
 		super.solve(input)
 		
-		let map = AoCGrid2D()
+		let map = AoCDictionaryGrid()
 		map.load(data: input.textLines)
 		
 		let p1Runs = [(3,1)]
