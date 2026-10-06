@@ -16,11 +16,11 @@ class Day11: AoCSolution {
 	override func solve(_ input: AoCInput) -> AoCResult {
 		super.solve(input)
 		
-		var seatingArea = AoCDictionaryGrid(defaultValue: ".", rule: .queen)
+		var seatingArea = AoCArrayGrid(defaultValue: ".", rule: .queen)
 		seatingArea.load(data: input.textLines)
 		let p1 = solvePart(seatingArea, part: 1)
 		
-		seatingArea = AoCDictionaryGrid(defaultValue: ".", rule: .queen)
+		seatingArea = AoCArrayGrid(defaultValue: ".", rule: .queen)
 		seatingArea.load(data: input.textLines)
 		let p2 = solvePart(seatingArea, part: 2)
 
@@ -28,28 +28,28 @@ class Day11: AoCSolution {
 						 part2: "There are \(p2) occupied seats")
 	}
 	
-	func solvePart(_ seatingArea: AoCGrid2D, part: Int) -> Int {
+	func solvePart(_ seatingArea: AoCArrayGrid, part: Int) -> Int {
 		var adds = Set<AoCCoord2D>()
 		var deletes = Set<AoCCoord2D>()
 		let tolerance = part == 1 ? 4 : 5
 		
 		while true {
-			for coord in seatingArea.coords {
-				let value = seatingArea.stringValue(at: coord)
+			for xy in seatingArea.allXY {
+				let value = seatingArea.stringValue(x: xy.0, y: xy.1)
 				
 				let occupiedNeighborCount =
 					(part == 1) ?
-						countNeighborsP1(coord, in: seatingArea) :
-						countNeighborsP2(coord, in: seatingArea)
+						countNeighborsP1(x: xy.0, y: xy.1, in: seatingArea) :
+						countNeighborsP2(x: xy.0, y: xy.1, in: seatingArea)
 				
 				if value == "L" {
 					if occupiedNeighborCount == 0 {
-						adds.insert(coord)
+						adds.insert(AoCCoord2D(x: xy.0, y: xy.1))
 					}
 				}
-				else { // value == "#"
+				else if value == "#" {
 					if occupiedNeighborCount >= tolerance {
-						deletes.insert(coord)
+						deletes.insert(AoCCoord2D(x: xy.0, y: xy.1))
 					}
 				}
 			}
@@ -72,17 +72,16 @@ class Day11: AoCSolution {
 		return passengerCount
 	}
 	
-	func countNeighborsP1(_ coord: AoCCoord2D, in seatingArea: AoCGrid2D) -> Int {
-		return seatingArea.neighbourCoords(at: coord, withValue: "#").count
+	func countNeighborsP1(x: Int, y: Int, in seatingArea: AoCArrayGrid) -> Int {
+		return seatingArea.neighbourXY(x: x, y: y, withValue: "#").count
 	}
 	
-	func countNeighborsP2(_ coord: AoCCoord2D, in seatingArea: AoCGrid2D) -> Int {
-		let ext = seatingArea.extent!
+	func countNeighborsP2(x: Int, y: Int, in seatingArea: AoCArrayGrid) -> Int {
 		var count = 0
 		for offset in seatingArea.neighbourOffsets {
-			var n = coord + offset
-			while ext.contains(n) {
-				let value = seatingArea.stringValue(at: n)
+			var xy = (x + offset.x, y + offset.y)
+			while seatingArea.isInBounds(x: xy.0, y: xy.1) {
+				let value = seatingArea.stringValue(x: xy.0, y: xy.1)
 				if value == "#" {
 					count += 1
 					break
@@ -90,7 +89,7 @@ class Day11: AoCSolution {
 				else if value == "L" {
 					break
 				}
-				n = n + offset
+				xy = (xy.0 + offset.x, xy.1 + offset.y)
 			}
 		}
 		return count

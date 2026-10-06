@@ -268,12 +268,12 @@ class AoCArrayGrid: AoCGrid2D {
 		}
 	}
 
-	private func isInBounds(x: Int, y: Int) -> Bool {
+	func isInBounds(x: Int, y: Int) -> Bool {
 		return x >= 0 && x < _width && y >= 0 && y < _height
 	}
 
 	/// Every (x, y) in the grid, row by row.
-	private var allXY: [(Int, Int)] {
+	var allXY: [(Int, Int)] {
 		return (0..<_height).flatMap { y in (0..<_width).map { x in (x, y) } }
 	}
 
@@ -409,6 +409,18 @@ class AoCArrayGrid: AoCGrid2D {
 		return xy.map { AoCCoord2D(x: $0.0, y: $0.1) }
 	}
 	
+	func neighbourXY(x: Int, y: Int) -> [(Int, Int)] {
+		let result = AoCCoord2D.getAdjacentOffsets(rule: rule).map { coord in
+			(coord.x + x, coord.y + y)
+		}
+		return result
+	}
+	
+	func neighbourXY(x: Int, y: Int, withValue s: String) -> [(Int, Int)] {
+		let result = neighbourXY(x: x, y: y).filter( { stringValue(x: $0.0, y: $0.1) == s })
+		return result
+	}
+
 	func neighbourCoords(at coord: AoCCoord2D) -> [AoCCoord2D] {
 		return coord.getAdjacentCoords(rule: self.rule)
 	}
