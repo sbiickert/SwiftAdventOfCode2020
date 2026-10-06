@@ -261,37 +261,32 @@ class AoCArrayGrid: AoCGrid2D {
 			return AoCExtent2D(min: AoCCoord2D.origin, max: AoCCoord2D(x: _width - 1, y: _height - 1))
 		}
 		set (newSize) {
-			_data = [[Any]]()
-			if let newSize {
-				_width = newSize.width
-				_height = newSize.height
-				for _ in 0..._height {
-					var row = [Any]()
-					for _ in 0..._width {
-						row.append(defaultValue)
-					}
-					_data.append(row)
-				}
-			}
-			else {
-				_width = 0
-				_height = 0
-			}
+			// Only the size of the new extent is used: the grid always starts at the origin.
+			_width = newSize?.width ?? 0
+			_height = newSize?.height ?? 0
+			_data = Array(repeating: Array(repeating: defaultValue, count: _width), count: _height)
 		}
 	}
-	
-	var coords: [AoCCoord2D] {
-		let pairs = zip(0..._width, 0..._height)
-		return pairs.map { AoCCoord2D(x: $0.0, y: $0.1) }
+
+	private func isInBounds(x: Int, y: Int) -> Bool {
+		return x >= 0 && x < _width && y >= 0 && y < _height
 	}
-	
+
+	/// Every (x, y) in the grid, row by row.
+	private var allXY: [(Int, Int)] {
+		return (0..<_height).flatMap { y in (0..<_width).map { x in (x, y) } }
+	}
+
+	var coords: [AoCCoord2D] {
+		return allXY.map { AoCCoord2D(x: $0.0, y: $0.1) }
+	}
+
 	var histogram: Dictionary<String, Int> {
 		var h = Dictionary<String, Int>()
-		let pairs = zip(0..._width, 0..._height)
-		for xy in pairs {
-			let s = stringValue(x: xy.0, y: xy.1)
-			let count = h[s, default: 0]
-			h[s] = count + 1
+		for row in _data {
+			for v in row {
+				h[AoCArrayGrid.transformToString(value: v), default: 0] += 1
+			}
 		}
 		return h
 	}
@@ -306,19 +301,22 @@ class AoCArrayGrid: AoCGrid2D {
 	}
 	
 	func load(data: [String]) {
-		guard !data.isEmpty else { return }
-		extent = AoCExtent2D(min: AoCCoord2D.origin, max: AoCCoord2D(x: data[0].count-1, y: data.count-1))
-		let pairs = zip(0..<data[0].count, 0..<data.count)
-		for xy in pairs {
-			let value = String(data[xy.1][xy.0])
-			setValue(value, x: xy.0, y: xy.1)
+		// Size the grid to the widest row; cells missing from shorter rows keep the default value.
+		let width = data.map { $0.count }.max() ?? 0
+		guard width > 0 else {
+			extent = nil
+			return
+		}
+		extent = AoCExtent2D(min: AoCCoord2D.origin, max: AoCCoord2D(x: width - 1, y: data.count - 1))
+		for (y, row) in data.enumerated() {
+			for (x, ch) in row.enumerated() {
+				_data[y][x] = String(ch)
+			}
 		}
 	}
-	
+
 	func stringValue(x: Int, y: Int) -> String {
-		guard x >= 0 && x < _width else { return defaultValue }
-		guard y >= 0 && x < _height else { return defaultValue }
-		return AoCArrayGrid.transformToString(value: _data[y][x])
+		return AoCArrayGrid.transformToString(value: value(x: x, y: y))
 	}
 	
 	func stringValue(at coord: AoCCoord2D) -> String {
@@ -336,13 +334,12 @@ class AoCArrayGrid: AoCGrid2D {
 	}
 
 	func value(x: Int, y: Int) -> Any {
-		if isTiledInfinitely {
+		if isTiledInfinitely && _width > 0 && _height > 0 {
 			let tiledX = AoCUtil.trueMod(num: x, mod: _width)
 			let tiledY = AoCUtil.trueMod(num: y, mod: _height)
 			return _data[tiledY][tiledX]
 		}
-		guard x >= 0 && x < _width else { return defaultValue }
-		guard y >= 0 && x < _height else { return defaultValue }
+		guard isInBounds(x: x, y: y) else { return defaultValue }
 		return _data[y][x]
 	}
 	
@@ -351,8 +348,7 @@ class AoCArrayGrid: AoCGrid2D {
 	}
 	
 	func setValue(_ v: Any, x: Int, y: Int) {
-		guard x >= 0 && x < _width else { return }
-		guard y >= 0 && x < _height else { return }
+		guard isInBounds(x: x, y: y) else { return }
 		_data[y][x] = v
 	}
 	
@@ -361,13 +357,42 @@ class AoCArrayGrid: AoCGrid2D {
 	}
 	
 	func fill(with value: String, at point: AoCCoord2D, filled: inout [AoCCoord2D]) -> Bool {
-		assert(1 == 0)
-		return false
+		guard let ext = extent, ext.contains(point) else {
+			return true
+		}
+		
+		var touchedInfinity = false
+		let valueToFill = self.stringValue(at: point)
+		
+		var work = Set([point])
+		while work.count > 0 {
+			var nextWork = Set<AoCCoord2D>()
+			
+			for c in work {
+				self.setValue(value, at: c)
+				let neighbors = neighbourCoords(at: c)
+				for n in neighbors {
+					if ext.contains(n) == false { touchedInfinity = true }
+					if !touchedInfinity && stringValue(at: n) == valueToFill {
+						nextWork.insert(n)
+					}
+				}
+			}
+			
+			work = nextWork
+			if touchedInfinity == true { break }
+		}
+		
+		if touchedInfinity {
+			for filledPoint in filled {
+				clear(at: filledPoint)
+			}
+		}
+		return touchedInfinity
 	}
 	
 	func clear(x: Int, y: Int) {
-		guard x >= 0 && x < _width else { return }
-		guard y >= 0 && x < _height else { return }
+		guard isInBounds(x: x, y: y) else { return }
 		_data[y][x] = defaultValue
 	}
 	
@@ -376,12 +401,11 @@ class AoCArrayGrid: AoCGrid2D {
 	}
 	
 	func getCoordsXY(withValue v: String) -> [(Int,Int)] {
-		let pairs = zip(0..._width, 0..._height)
-		return pairs.filter( { AoCArrayGrid.transformToString(value: _data[$0.1][$0.0]) == v} )
+		return allXY.filter( { AoCArrayGrid.transformToString(value: _data[$0.1][$0.0]) == v} )
 	}
-	
+
 	func getCoords(withValue v: String) -> [AoCCoord2D] {
-		var xy = getCoordsXY(withValue: v)
+		let xy = getCoordsXY(withValue: v)
 		return xy.map { AoCCoord2D(x: $0.0, y: $0.1) }
 	}
 	

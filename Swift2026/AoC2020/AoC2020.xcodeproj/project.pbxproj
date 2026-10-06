@@ -8,16 +8,52 @@
 
 /* Begin PBXBuildFile section */
 		373460E0306D562800B3CE67 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 373460DF306D562800B3CE67 /* Algorithms */; };
+		37E034923075969D00C0B481 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = 37E034913075969D00C0B481 /* Algorithms */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		000000000000000000000120 /* AoC2020 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = AoC2020; sourceTree = BUILT_PRODUCTS_DIR; };
+		37E034803075969D00C0B481 /* AoCLibraryTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AoCLibraryTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		37E034903075969D00C0B481 /* Exceptions for "MyTool" folder in "AoCLibraryTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Libraries/AoCGrid2D.swift,
+				Libraries/AoCInput.swift,
+				Libraries/AoCSolution.swift,
+				Libraries/AoCSpatial.swift,
+				Libraries/AoCString.swift,
+				Libraries/AoCUtil.swift,
+				Solutions/Day01.swift,
+				Solutions/Day02.swift,
+				Solutions/Day03.swift,
+				Solutions/Day04.swift,
+				Solutions/Day05.swift,
+				Solutions/Day06.swift,
+				Solutions/Day07.swift,
+				Solutions/Day08.swift,
+				Solutions/Day09.swift,
+				Solutions/Day10.swift,
+				Solutions/Day11.swift,
+			);
+			target = 37E0347F3075969D00C0B481 /* AoCLibraryTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		000000000000000000000010 /* MyTool */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				37E034903075969D00C0B481 /* Exceptions for "MyTool" folder in "AoCLibraryTests" target */,
+			);
 			path = MyTool;
+			sourceTree = "<group>";
+		};
+		37E034813075969D00C0B481 /* AoCLibraryTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = AoCLibraryTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -29,6 +65,12 @@
 				373460E0306D562800B3CE67 /* Algorithms in Frameworks */,
 			);
 		};
+		37E0347D3075969D00C0B481 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+				37E034923075969D00C0B481 /* Algorithms in Frameworks */,
+			);
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -36,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000010 /* MyTool */,
+				37E034813075969D00C0B481 /* AoCLibraryTests */,
 				000000000000000000000020 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -44,6 +87,7 @@
 			isa = PBXGroup;
 			children = (
 				000000000000000000000120 /* AoC2020 */,
+				37E034803075969D00C0B481 /* AoCLibraryTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -71,6 +115,27 @@
 			productReference = 000000000000000000000120 /* AoC2020 */;
 			productType = "com.apple.product-type.tool";
 		};
+		37E0347F3075969D00C0B481 /* AoCLibraryTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 37E034863075969D00C0B481 /* Build configuration list for PBXNativeTarget "AoCLibraryTests" */;
+			buildPhases = (
+				37E0347C3075969D00C0B481 /* Sources */,
+				37E0347D3075969D00C0B481 /* Frameworks */,
+				37E0347E3075969D00C0B481 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				37E034813075969D00C0B481 /* AoCLibraryTests */,
+			);
+			name = AoCLibraryTests;
+			packageProductDependencies = (
+				37E034913075969D00C0B481 /* Algorithms */,
+			);
+			productName = AoCLibraryTests;
+			productReference = 37E034803075969D00C0B481 /* AoCLibraryTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -82,6 +147,9 @@
 				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					000000000000000100000000 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					37E0347F3075969D00C0B481 = {
 						CreatedOnToolsVersion = 27.0;
 					};
 				};
@@ -104,12 +172,26 @@
 			projectRoot = "";
 			targets = (
 				000000000000000100000000 /* AoC2020 */,
+				37E0347F3075969D00C0B481 /* AoCLibraryTests */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		37E0347E3075969D00C0B481 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		000000000000000120000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		37E0347C3075969D00C0B481 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			files = (
 			);
@@ -279,6 +361,52 @@
 			};
 			name = Release;
 		};
+		37E034843075969D00C0B481 /* Debug configuration for PBXNativeTarget "AoCLibraryTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.AoCLibraryTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Debug;
+		};
+		37E034853075969D00C0B481 /* Release configuration for PBXNativeTarget "AoCLibraryTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 27.0;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.yourcompany.AoCLibraryTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 27.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -298,6 +426,14 @@
 			);
 			defaultConfigurationName = Release;
 		};
+		37E034863075969D00C0B481 /* Build configuration list for PBXNativeTarget "AoCLibraryTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				37E034843075969D00C0B481 /* Debug configuration for PBXNativeTarget "AoCLibraryTests" */,
+				37E034853075969D00C0B481 /* Release configuration for PBXNativeTarget "AoCLibraryTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -313,6 +449,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		373460DF306D562800B3CE67 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 373460DE306D562800B3CE67 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		37E034913075969D00C0B481 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 373460DE306D562800B3CE67 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
