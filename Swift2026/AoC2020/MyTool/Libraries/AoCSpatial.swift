@@ -332,6 +332,14 @@ struct AoCCoord2D: Hashable, Equatable, CustomDebugStringConvertible {
 		}
 	}
 	
+	func rotatedAroundOrigin(direction: AoCTurn) -> AoCCoord2D {
+		// 90 degrees
+		if direction == .right {
+			return AoCCoord2D(x: -1 * y, y: x)
+		}
+		return AoCCoord2D(x: y, y: -1 * x)
+	}
+	
 	var description: String {
 		return "[\(x),\(y)]"
 	}

@@ -19,14 +19,29 @@ class Day12: AoCSolution {
 		let instructions = input.textLines.map { NavInstruction(defn: $0) }
 		
 		let p1 = solvePartOne(instructions)
-		
-		return AoCResult(part1: "The ferry is \(p1) units from the start", part2: "sync")
+		let p2 = solvePartTwo(instructions)
+
+		return AoCResult(part1: "The ferry is \(p1) units from the start",
+						 part2: "The ferry is \(p2) units from the start")
 	}
 	
 	func solvePartOne(_ instructions: [NavInstruction]) -> Int {
 		let ferry = Ferry()
 		for i in instructions {
 			ferry.move(instruction: i)
+		}
+		return ferry.position.location.manhattanDistance(to: AoCCoord2D.origin)
+	}
+	
+	func solvePartTwo(_ instructions: [NavInstruction]) -> Int {
+		let ferry = Ferry()
+		for i in instructions {
+			if i.iType == .F {
+				ferry.moveTowardsWaypoint(instruction: i)
+			}
+			else {
+				ferry.moveWaypoint(instruction: i)
+			}
 		}
 		return ferry.position.location.manhattanDistance(to: AoCCoord2D.origin)
 	}
@@ -52,6 +67,30 @@ class Ferry {
 		else {
 			position = position.movedForward(distance: instruction.value)
 		}
+	}
+	
+	func moveWaypoint(instruction: NavInstruction) {
+		if let offsetDir = instruction.iType.direction {
+			for _ in 1...instruction.value {
+				waypoint = waypoint.offset(direction: offsetDir)
+			}
+		}
+		else if let turnDir = instruction.iType.turnDirection {
+			for _ in 1...instruction.turnCount {
+				waypoint = waypoint.rotatedAroundOrigin(direction: turnDir)
+			}
+		}
+	}
+	
+	func moveTowardsWaypoint(instruction: NavInstruction) {
+		assert(instruction.iType == .F)
+		
+		var ferryLocation = position.location
+		for _ in 1...instruction.value {
+			ferryLocation = ferryLocation + waypoint
+		}
+		
+		position = AoCPos2D(location: ferryLocation, direction: position.direction)
 	}
 }
 
