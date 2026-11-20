@@ -79,7 +79,6 @@ struct MaskInstruction: Instruction, CustomDebugStringConvertible {
 	
 	let data: [String]
 	
-	
 	func derive(fromAddress a:Int36) -> MaskInstruction {
 		var newData = [String]()
 		for bit in 0..<36 {
@@ -92,17 +91,14 @@ struct MaskInstruction: Instruction, CustomDebugStringConvertible {
 		}
 		return MaskInstruction(data: newData)
 	}
-
 	
 	var hasFloat: Bool {
 		return data.contains(where: {$0 == "X"})
 	}
 	
+	// My term: anchoring is the opposite of floating
 	var anchoredMasks: [MaskInstruction] {
 		let masks = MaskInstruction.anchor(mask: self)
-//		for mask in masks {
-//			print(mask.debugDescription)
-//		}
 		return masks
 	}
 	
