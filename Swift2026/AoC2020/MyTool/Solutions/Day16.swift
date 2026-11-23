@@ -20,19 +20,61 @@ class Day16: AoCSolution {
 		
 		let p1 = solvePartOne(tickets: otherTickets, rules: rules)
 		
-		//let validTickets = otherTickets.filter { $0.isValid(given: rules) }
+		let validTickets = otherTickets.filter { $0.isValid(given: rules) }
 		
-		return AoCResult(part1: "The ticket scanning error rate is \(p1)", part2: "sync")
+		let p2 = solvePartTwo(myTicket, others: validTickets, given: rules)
+		
+		return AoCResult(part1: "The ticket scanning error rate is \(p1)",
+						 part2: "Product of departure values is \(p2)")
 	}
 	
 	func solvePartOne(tickets: [Ticket], rules: [TicketRule]) -> Int {
 		var allInvalidValues = [Int]()
 		for ticket in tickets {
-			let invalidValues = ticket.invalidValues(given: rules)
-			allInvalidValues.append(contentsOf: invalidValues)
+			allInvalidValues.append(contentsOf: ticket.invalidValues(given: rules))
 		}
 		let ticketScanningErrorRate = allInvalidValues.reduce(0, +)
 		return ticketScanningErrorRate
+	}
+	
+	func solvePartTwo(_ myTicket: Ticket, others otherTickets: [Ticket], given rules:[TicketRule]) -> Int {
+		var possible = [Set<String>]()
+		let fieldCount = myTicket.values.count
+		
+		// Start with all fields being possible
+		for _ in 0..<fieldCount {
+			possible.append(Set(rules.map({$0.name})))
+		}
+		
+		// Process of elimination
+		// Find rules that don't allow a ticket value at position i
+		while possible.contains(where: {$0.count > 1}) {
+			for i in 0..<fieldCount {
+				for ticket in otherTickets {
+					for rule in rules {
+						if !rule.allows(ticket.values[i]) {
+							possible[i].remove(rule.name)
+						}
+					}
+				}
+				// If this field has been determined, all others can't be it
+				if possible[i].count == 1 {
+					let fieldName = possible[i].first!
+					for j in 0..<fieldCount {
+						if i != j { possible[j].remove(fieldName)}
+					}
+				}
+			}
+		}
+		
+		var departureValues = [Int]()
+		for (i, fieldName) in possible.compactMap( {$0.first} ).enumerated() {
+			if fieldName.starts(with: "departure") {
+				departureValues.append(myTicket.values[i])
+			}
+		}
+		let product = departureValues.reduce(1, *)
+		return product
 	}
 	
 	func parseInput(lines: [String]) -> ([TicketRule], Ticket, [Ticket]) {
@@ -66,6 +108,10 @@ class Day16: AoCSolution {
 struct TicketRule {
 	let name: String
 	let ranges: (ClosedRange<Int>, ClosedRange<Int>)
+	
+	func allows(_ value: Int) -> Bool {
+		return ranges.0.contains(value) || ranges.1.contains(value)
+	}
 }
 
 struct Ticket {
@@ -73,20 +119,12 @@ struct Ticket {
 	
 	func invalidValues(given rules: [TicketRule]) -> [Int] {
 		return values.filter { value in
-			let valueCoveredByRules = rules.map {
-				$0.ranges.0.contains(value) || $0.ranges.1.contains(value)
-			}
+			let valueCoveredByRules = rules.map { $0.allows(value) }
 			return valueCoveredByRules.allSatisfy {$0 == false}
 		}
 	}
 	
 	func isValid(given rules: [TicketRule]) -> Bool {
-		let valuesCovered = values.map { value in
-			let valueCoveredByRules = rules.map {
-				$0.ranges.0.contains(value) || $0.ranges.1.contains(value)
-			}
-			return valueCoveredByRules.contains(where: {$0}) // value was covered by a rule
-		}
-		return !valuesCovered.contains(where: {$0 == false})
+		return self.invalidValues(given: rules).isEmpty
 	}
 }
