@@ -19,9 +19,10 @@ class Day17: AoCSolution {
 		let startPocketDimension = setup(lines: input.textLines)
 		
 		let p1 = solvePart(pocket: startPocketDimension, dimensions: 3, cycles: 6)
-		
+		let p2 = solvePart(pocket: startPocketDimension, dimensions: 4, cycles: 6)
+
 		return AoCResult(part1: "Number of active cubes (d=3): \(p1)",
-						 part2: "sync")
+						 part2: "Number of active cubes (d=4): \(p2)")
 	}
 	
 	func setup(lines: [String]) -> Dictionary<ConwayPoint, Bool> {
